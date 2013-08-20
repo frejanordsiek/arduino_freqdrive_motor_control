@@ -36,6 +36,8 @@
    analog signals are made with an Analog Devices AD56X4 series
    Quad DAC (communicating over SPI. Motor settings are set by
    sending messages over the serial connection to the Arduino.
+   If the arduino has to wait longer than a specified timeout, it
+   stops all motors.
    
    Author:   Freja Nordsiek
    Notes:
@@ -99,6 +101,15 @@ String commandFromComputerString = "";
 boolean commandFromComputerComplete = false;
 int commandFromComputerMaxLength = 256;
 
+/* It is important that the motors be stopped if we don't receive
+   any commands from the computer in a while. So, we need to define
+   a timeout in milliseconds and have a variable to store the last
+   time a command was received.
+*/
+
+unsigned long timeout = 10000;
+unsigned long timeOfLastCommand;
+
 // How many motors we have.
 
 int numberMotors = 2;
@@ -148,11 +159,6 @@ void setup()
   
   AD56X4.reset(AD56X4_SS_pin,true);
   
-  // We want to communicate with the computer at the fastest speed
-  // possible.
-  
-  Serial.begin(115200);
-  
   // Set the start/stop and forward/reverse pins to output.
   
   for (int i = 0; i < numberMotors; i++)
@@ -170,16 +176,31 @@ void setup()
   
   commandFromComputerString.reserve(commandFromComputerMaxLength);
   
+  // The present time will be defined as the time of the first
+  // command as far as timeout purposes.
+  
+  timeOfLastCommand = millis();
+  
+  // We want to communicate with the computer at the fastest speed
+  // possible.
+  
+  Serial.begin(115200);
+  
 }
 
 void loop()
 {
   
   // If we have a complete command from the serial, it needs to be
-  //  processed.
+  // processed.
   
   if (commandFromComputerComplete)
     {
+      
+      // As we have a new command, we need to set timeOfLastCommand
+      // to now.
+      
+      timeOfLastCommand = millis();
     
       // Trim off the newline and any characters after it (will
       // only deal with one command at a time).
@@ -266,6 +287,19 @@ void loop()
     commandFromComputerComplete = false;
     
   }
+  
+  // If the time since the last command is greater than the
+  // timeout, we need to stop all motors.
+  
+  if (millis() - timeOfLastCommand > timeout)
+    {
+      for (int i = 0; i < numberMotors; i++)
+        {
+          motorStartStates[i] = false;
+          motorReverseStates[i] = false;
+          motorFrequencySetVoltages[i] = 0;
+        }
+    }
   
   // Send the Start/Stop, Forward/Reverse, and frequency set
   // voltage states to the motor drives.
