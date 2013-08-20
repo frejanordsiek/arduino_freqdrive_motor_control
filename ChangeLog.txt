@@ -1,2 +1,5 @@
 2013-08-19 Freja Nordsiek
 	* Initial version.
+	* Changed stringToFloat function to handle more ways of giving special
+	  values and allowing 'd' and 'D' to be used to denote the start of the
+	  exponent field.

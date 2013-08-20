@@ -535,22 +535,24 @@ String floatToString(float x)
 float stringToFloat(String s)
 {
   
-  /* Unfortunately, the function strtod included with the arduino does
-     a bad job and essentially only reads the digits before the
-     decimal point. So, the program has to implement its own.
+  /* Rather than using the builtin strtod, I am implementing my own
+     to handle more ways to give special values and to also allow
+     'd' and 'D' to be used in place of 'e' or 'E'.
   */
   
   // All the surrounding whitespace needs to be removed, and
   // converting to lower case will make for less character testing.
+  // Then convert all 'd' characters to 'e'.
   
   s.trim();
   s.toLowerCase();
+  s.replace('d','e');
   
   // First, we need to look for the special cases of NaN and different
   // ways of writing infinity. Then, we have to handle the more
   // general case.
   
-  if (s.length() == 0 || s == "nan")
+  if (s.length() == 0 || s == "nan" || s == "notanumber")
     return NAN;
   else if (s == "inf" || s == "infty" || s == "infinity")
     return INFINITY;
