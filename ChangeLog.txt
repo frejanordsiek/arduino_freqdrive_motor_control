@@ -1,3 +1,7 @@
+2013-08-26 Freja Nordsiek
+	* Fixed bugs in calculating the output value and putting it to the right
+	  channel.
+
 2013-08-20 Freja Nordsiek
 	* Added a timeout that a command must be received in or the motor is
 	  halted.

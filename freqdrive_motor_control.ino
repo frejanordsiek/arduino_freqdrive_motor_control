@@ -491,10 +491,11 @@ void WriteMotorControlStates()
       // a long (32-bit signed integer) before being forced into the
       // range [0, 0xFFFF] to put in the array.
         
-      long outputValue = lround(motorFrequencyVoltageToDACslope[i]
-                         * voltage + motorFrequencyVoltageToDACintercept[i]);
+      long outputValue = lround((voltage
+                          - motorFrequencyVoltageToDACintercept[i])
+                          / motorFrequencyVoltageToDACslope[i]);
       
-      motorFrequencyDACvalues[i] = word(constrain(outputValue,0,0xFFF));
+      motorFrequencyDACvalues[3-i] = word(constrain(outputValue,0,0xFFFF));
       
     }
   
