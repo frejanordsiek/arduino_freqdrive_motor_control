@@ -214,7 +214,7 @@ void loop()
       if (commandFromComputerString == "Status?")
         {
           // Only status we have so far is just OK.
-          Serial.println("OK");
+          Serial.print("OK\n");
         }
       else if (commandFromComputerString == "MotorSettings?")
         {
@@ -255,7 +255,9 @@ void loop()
                 commandFromComputerString += " ";
             }
           
-          Serial.println(commandFromComputerString);
+          commandFromComputerString += "\n";
+          
+          Serial.print(commandFromComputerString);
           
         }
       else if (commandFromComputerString == "Halt")
@@ -267,17 +269,17 @@ void loop()
               motorReverseStates[i] = false;
               motorFrequencySetVoltages[i] = 0;
             }
-          Serial.println("ACK");
+          Serial.print("ACK\n");
         }
       else if (commandFromComputerString.startsWith("SetMotors: "))
         {
           if (processMotorSetCommand(commandFromComputerString))
-            Serial.println("ACK");
+            Serial.print("ACK\n");
           else
-            Serial.println("Invalid");
+            Serial.print("Invalid\n");
         }
       else // As it wasn't a recognized command, return "Invalid".
-        Serial.println("Invalid");
+        Serial.print("Invalid\n");
     
     // Clear the command string and reset the flag saying that
     // the command is complete (that a new command is waiting to
@@ -772,4 +774,5 @@ float stringToFloat(String s)
     }
     
 }
+
 

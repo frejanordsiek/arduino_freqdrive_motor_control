@@ -1,3 +1,7 @@
+2013-08-27 Freja Nordsiek
+	* Changed Serial.println to Serial.print with an explicit LF so that
+	  the default LF/CF won't be used.
+
 2013-08-26 Freja Nordsiek
 	* Fixed bugs in calculating the output value and putting it to the right
 	  channel.
