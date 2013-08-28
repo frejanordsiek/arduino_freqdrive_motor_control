@@ -125,7 +125,7 @@ int motorForwardReversePins[] = {2, 5, 8, 9};
 // frequency controls, the slopes of the voltage to DAC value
 // lines, and the y-intercept of the voltage to DAC value lines.
 
-float motorFrequencyMaxVoltages[] = {7, 11, 10, 10};
+float motorFrequencyMaxVoltages[] = {7.5, 11, 10, 10};
 float motorFrequencyVoltageToDACslope[] = {0.0001674281,0.0001677479,0.00015259,0.00015259};
 float motorFrequencyVoltageToDACintercept[] = {0.005382222, 0.01291596, 0, 0};
 
