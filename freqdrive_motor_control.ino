@@ -47,7 +47,7 @@
 /* There are four different commands that are accepted over the
    serial link. An invalid command causes a response of "Invalid".
    
-   Check Program Status:
+   Get Program Status:
      "Status?"
      
      Request the status of this motor control program. Responds "OK"
@@ -59,7 +59,7 @@
      Requests the version of this program. Responds with the
      version string.
    
-   Return Motor Settings:
+   Get Motor Settings:
      "MotorSettings?"
      
      Request the Start/Stop, Forward/Reverse, and frequency set
