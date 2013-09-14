@@ -552,6 +552,15 @@ void WriteMotorControlStates()
       motorFrequencyDACvalues[3-i] = word(constrain(outputValue,0,0xFFFF));
       
     }
+    
+  // Iterate over the unused motors to turn them off.
+  
+  for (int i = numberMotors+1; i < 4; i++)
+    {
+      digitalWrite(motorStartStopPins[i], LOW);
+      digitalWrite(motorForwardReversePins[i], HIGH);
+      motorFrequencyDACvalues[3-i] = 0;
+    }
   
   // Write the DAC outputs making sure that both the input (buffer)
   // and DAC (output) registers are updated.

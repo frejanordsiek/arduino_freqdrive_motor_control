@@ -4,6 +4,7 @@
 	  Start/Stop and Forward/Reverse controls to the motor drives.
 	* Added explicit minimum frequency set voltages instead of just using
 	  zero.
+	* Unused motors are set to the off state at each update.
 
 2013-08-28 Freja Nordsiek
 	* Incremented version to 0.1 since the program seems to work with the
