@@ -228,6 +228,24 @@ void loop()
         }
       else if (commandFromComputerString == "Version?")
         Serial.print(freqdriveMotorControlVersion + "\n");
+      else if (commandFromComputerString == "Halt")
+        {
+          // Stop all motors.
+          for (int i = 0; i < numberMotors; i++)
+            {
+              motorStartStates[i] = false;
+              motorReverseStates[i] = false;
+              motorFrequencySetVoltages[i] = 0;
+            }
+          Serial.print("ACK\n");
+        }
+      else if (commandFromComputerString.startsWith("SetMotors: "))
+        {
+          if (processMotorSetCommand(commandFromComputerString))
+            Serial.print("ACK\n");
+          else
+            Serial.print("Invalid\n");
+        }
       else if (commandFromComputerString == "MotorSettings?")
         {
           
@@ -271,24 +289,6 @@ void loop()
           
           Serial.print(commandFromComputerString);
           
-        }
-      else if (commandFromComputerString == "Halt")
-        {
-          // Stop all motors.
-          for (int i = 0; i < numberMotors; i++)
-            {
-              motorStartStates[i] = false;
-              motorReverseStates[i] = false;
-              motorFrequencySetVoltages[i] = 0;
-            }
-          Serial.print("ACK\n");
-        }
-      else if (commandFromComputerString.startsWith("SetMotors: "))
-        {
-          if (processMotorSetCommand(commandFromComputerString))
-            Serial.print("ACK\n");
-          else
-            Serial.print("Invalid\n");
         }
       else // As it wasn't a recognized command, return "Invalid".
         Serial.print("Invalid\n");
