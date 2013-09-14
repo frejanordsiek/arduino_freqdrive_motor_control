@@ -121,7 +121,7 @@
 
 // Version of the program.
 
-const String freqdriveMotorControlVersion = "0.1";
+const String freqdriveMotorControlVersion = "0.2";
 
 // Output pin for the Slave Select SPI line of the AD56X4.
 
