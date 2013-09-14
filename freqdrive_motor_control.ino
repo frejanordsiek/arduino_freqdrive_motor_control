@@ -249,7 +249,7 @@ void loop()
       else if (commandFromComputerString == "Halt")
         {
           // Stop all motors.
-          for (int i = 0; i < numberMotors; i++)
+          for (int i = 0; i < 4; i++)
             {
               motorStartStates[i] = false;
               motorReverseStates[i] = false;
