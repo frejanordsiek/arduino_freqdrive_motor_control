@@ -8,6 +8,8 @@
 	* Added "NumberMotors?" command to request the number of motors being
 	  controlled.
 	* "Halt" command now stops all motors, even ones not used.
+	* Added "GetMotorFrequencyConfiguration(i)" command to get the
+	  configuration for setting the i'th motor frequency.
 
 2013-08-28 Freja Nordsiek
 	* Incremented version to 0.1 since the program seems to work with the

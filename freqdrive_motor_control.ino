@@ -98,6 +98,19 @@
      
      Requests the number of motors being controlled. Responds with
      a string representation of the number being controlled.
+   
+   Get Motor Frequency Configuration:
+     "GetMotorFrequencyConfiguration(i)"
+     
+     Requests the frequency set voltage configuration information
+     for the i'th motor (zero indexed, so 0, 1, 2, or 3). The
+     information is returned as
+     
+     "[min,max] = [A,B]; slope = C; intercept = D;"
+     
+     Where A and B are the mininum and maximum set voltages, and
+     C and D are the slope and intercept for the set voltage to
+     DAC output value lines. A, B, C, and D are all floats.
 */
 
 #include "Arduino.h"
@@ -233,7 +246,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the seven commands in
+      // Check the command string for each of the eight commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -334,6 +347,27 @@ void loop()
           commandFromComputerString += ";\n";
           
           Serial.print(commandFromComputerString);
+          
+        }
+      else if (commandFromComputerString.startsWith("GetMotorFrequencyConfiguration(")
+               && isdigit(commandFromComputerString.charAt(31))
+               && commandFromComputerString.charAt(32) == ')'
+               && commandFromComputerString.length() == 33)
+        {
+          
+          // Get the motor number from the argument between
+          // parentheses. If it is between 0 and 3 inclusive, then
+          // the settings for that channel are printed.
+          
+          int i = (int)commandFromComputerString.substring(31,32).toInt();
+          if (i >= 0 && i <= 3)
+            Serial.print("[min,max] = [" + floatToString(motorFrequencyMinVoltages[i])
+                         + "," + floatToString(motorFrequencyMaxVoltages[i])
+                         + "]; slope = " + floatToString(motorFrequencyVoltageToDACslope[i])
+                         + "; intercept = " + floatToString(motorFrequencyVoltageToDACintercept[i])
+                         + ";\n");
+          else
+            Serial.print("Invalid\n");
           
         }
       else // As it wasn't a recognized command, return "Invalid".
