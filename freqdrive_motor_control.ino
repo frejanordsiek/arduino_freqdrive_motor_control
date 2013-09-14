@@ -261,13 +261,7 @@ void loop()
         Serial.print(String(numberMotors) + "\n");
       else if (commandFromComputerString == "Halt")
         {
-          // Stop all motors.
-          for (int i = 0; i < 4; i++)
-            {
-              motorStartStates[i] = false;
-              motorReverseStates[i] = false;
-              motorFrequencySetVoltages[i] = 0;
-            }
+          haltMotors();
           Serial.print("ACK\n");
         }
       else if (commandFromComputerString.startsWith("SetMotors: "))
@@ -400,6 +394,17 @@ void loop()
   
   WriteMotorControlStates();
   
+}
+
+// Stops all motors and sets the set voltages to zero.
+void haltMotors()
+{
+  for (int i = 0; i < 4; i++)
+    {
+      motorStartStates[i] = false;
+      motorReverseStates[i] = false;
+      motorFrequencySetVoltages[i] = 0;
+    }
 }
 
 /* Given the set command string for the motors, the command is
