@@ -53,6 +53,12 @@
      Request the status of this motor control program. Responds "OK"
      if the program is working right.
    
+   Get Program Version:
+     "Version?"
+     
+     Requests the version of this program. Responds with the
+     version string.
+   
    Return Motor Settings:
      "MotorSettings?"
      
@@ -84,6 +90,10 @@
 #include "ctype.h"
 #include <SPI.h>
 #include <AD56X4.h>
+
+// Version of the program.
+
+const String freqdriveMotorControlVersion = "0.1";
 
 // Output pin for the Slave Select SPI line of the AD56X4.
 
@@ -207,7 +217,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the four commands in
+      // Check the command string for each of the five commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -216,6 +226,8 @@ void loop()
           // Only status we have so far is just OK.
           Serial.print("OK\n");
         }
+      else if (commandFromComputerString == "Version?")
+        Serial.print(freqdriveMotorControlVersion + "\n");
       else if (commandFromComputerString == "MotorSettings?")
         {
           
