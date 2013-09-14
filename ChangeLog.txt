@@ -11,6 +11,8 @@
 	* Added "GetMotorFrequencyConfiguration(i)" command to get the
 	  configuration for setting the i'th motor frequency.
 	* Incremented version to 0.2
+	* Added "SetNumberMotors" command to be able to change the number of
+	  motors being controlled.
 
 2013-08-28 Freja Nordsiek
 	* Incremented version to 0.1 since the program seems to work with the

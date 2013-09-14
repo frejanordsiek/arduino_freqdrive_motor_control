@@ -99,6 +99,14 @@
      Requests the number of motors being controlled. Responds with
      a string representation of the number being controlled.
    
+   Set Number of Motors:
+     "SetNumberMotors: i"
+     
+     Sets the number of motors being controlled the value of i,
+     which must be between 1 and 4 inclusive. The motors are all
+     stopped as if a "Halt" command was issued. Responds with "ACK"
+     if successful.
+   
    Get Motor Frequency Configuration:
      "GetMotorFrequencyConfiguration(i)"
      
@@ -246,7 +254,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the eight commands in
+      // Check the command string for each of the nine commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -360,6 +368,27 @@ void loop()
                          + "]; slope = " + floatToString(motorFrequencyVoltageToDACslope[i])
                          + "; intercept = " + floatToString(motorFrequencyVoltageToDACintercept[i])
                          + ";\n");
+          else
+            Serial.print("Invalid\n");
+          
+        }
+      else if (commandFromComputerString.startsWith("SetNumberMotors: ")
+               && isdigit(commandFromComputerString.charAt(17))
+               && commandFromComputerString.length() == 18)
+        {
+          
+          // Get the number of motors from the argument after the colon
+          // and space. If it is between 1 and 4 inclusive, then the
+          // motors are halted and numberMotors is set to the new value
+          // and "ACK" is sent back. Otherwise, the command is invalid.
+          
+          int i = (int)commandFromComputerString.substring(17,18).toInt();
+          if (i >= 1 && i <= 4)
+            {
+              haltMotors();
+              numberMotors = i;
+              Serial.print("ACK\n");
+            }
           else
             Serial.print("Invalid\n");
           
