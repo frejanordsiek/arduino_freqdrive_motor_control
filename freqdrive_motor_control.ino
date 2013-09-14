@@ -140,10 +140,11 @@ int numberMotors = 2;
 int motorStartStopPins[] = {3, 4, 6, 7};
 int motorForwardReversePins[] = {2, 5, 8, 9};
 
-// Arrays to hold the max voltages to be applied to the motor
+// Arrays to hold the min/max voltages to be applied to the motor
 // frequency controls, the slopes of the voltage to DAC value
 // lines, and the y-intercept of the voltage to DAC value lines.
 
+float motorFrequencyMinVoltages[] = {0, 0, 0, 0};
 float motorFrequencyMaxVoltages[] = {7.5, 11, 10, 10};
 float motorFrequencyVoltageToDACslope[] = {0.0001674281,0.0001677479,0.00015259,0.00015259};
 float motorFrequencyVoltageToDACintercept[] = {0.005382222, 0.01291596, 0, 0};
@@ -530,9 +531,11 @@ void WriteMotorControlStates()
         digitalWrite(motorForwardReversePins[i], HIGH);
         
       // For this motor, we need to output the proper voltage by
-      // forcing it into the range [0, motorFrequencyMaxVoltage].
+      // forcing it into the range
+      // [motorFrequencyMinVoltage, motorFrequencyMaxVoltage].
       
-      float voltage = constrain(motorFrequencySetVoltages[i],0,
+      float voltage = constrain(motorFrequencySetVoltages[i],
+                                motorFrequencyMinVoltages[i],
                                 motorFrequencyMaxVoltages[i]);
         
       // The slope and intercept of the voltage to DAC output curve
