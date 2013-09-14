@@ -92,6 +92,12 @@
      string of the form "A/O: a b c d; F/R: e f g h;" is the
      response where a-d are the Start/Stop pins and e-h are the
      Forward/Reverse pins.
+     
+   Get Number of Motors:
+     "NumberMotors?"
+     
+     Requests the number of motors being controlled. Responds with
+     a string representation of the number being controlled.
 */
 
 #include "Arduino.h"
@@ -227,7 +233,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the six commands in
+      // Check the command string for each of the seven commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -238,6 +244,8 @@ void loop()
         }
       else if (commandFromComputerString == "Version?")
         Serial.print(freqdriveMotorControlVersion + "\n");
+      else if (commandFromComputerString == "NumberMotors?")
+        Serial.print(String(numberMotors) + "\n");
       else if (commandFromComputerString == "Halt")
         {
           // Stop all motors.
