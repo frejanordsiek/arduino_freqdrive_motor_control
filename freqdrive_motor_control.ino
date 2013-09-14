@@ -82,7 +82,16 @@
      motor setting status for the Return Motor Settings command. If
      the command is valid, the motor settings are updated and a
      response of "ACK" is sent. If the command is invalid, the current
-     motor settins are kept and a response of "Invalid" is sent. 
+     motor settins are kept and a response of "Invalid" is sent.
+   
+   Get Motor Control Pins:
+     "MotorControlPins?"
+     
+     Requests the pins used for the Start/Stop and Forward/Reverse
+     states for all four motor drives, even those not used. A
+     string of the form "A/O: a b c d; F/R: e f g h;" is the
+     response where a-d are the Start/Stop pins and e-h are the
+     Forward/Reverse pins.
 */
 
 #include "Arduino.h"
@@ -217,7 +226,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the five commands in
+      // Check the command string for each of the six commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -286,6 +295,34 @@ void loop()
             }
           
           commandFromComputerString += "\n";
+          
+          Serial.print(commandFromComputerString);
+          
+        }
+      else if (commandFromComputerString == "MotorControlPins?")
+        {
+          // To save memory, the return string will just be put
+          // into the command string. The Start/Stop pins are given
+          // first followed by the Forward/Reverse pins. Spaces
+          // are used as separators.
+          
+          commandFromComputerString = "A/O:";
+          
+          for (int i = 0; i < 4; i++)
+            {
+              commandFromComputerString += ' ';
+              commandFromComputerString += motorStartStopPins[i];
+            }
+          
+          commandFromComputerString += "; F/R:";
+          
+          for (int i = 0; i < 4; i++)
+            {
+              commandFromComputerString += ' ';
+              commandFromComputerString += motorForwardReversePins[i];
+            }
+          
+          commandFromComputerString += ";\n";
           
           Serial.print(commandFromComputerString);
           

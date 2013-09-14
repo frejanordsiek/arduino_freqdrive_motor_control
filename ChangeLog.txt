@@ -1,5 +1,7 @@
 2013-09-14 Freja Nordsiek
 	* Added "Version?" command to request the program's version string.
+	* Added "MotorControlPins?" command to get the pins used for the
+	  Start/Stop and Forward/Reverse controls to the motor drives.
 
 2013-08-28 Freja Nordsiek
 	* Incremented version to 0.1 since the program seems to work with the
