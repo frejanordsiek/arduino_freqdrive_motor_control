@@ -1,6 +1,8 @@
 2013-12-20 Freja Nordsiek
 	* Added "SetMotorControlPins" command to change which pins control
 	  the motors.
+	* Changed license from 3-clause BSD to 2-clause BSD.
+	* Renamed LICENSE.txt to COPYING.txt
 
 2013-09-14 Freja Nordsiek
 	* Added "Version?" command to request the program's version string.
