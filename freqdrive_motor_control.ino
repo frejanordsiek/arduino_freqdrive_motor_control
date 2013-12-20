@@ -92,6 +92,18 @@
      string of the form "A/O: a b c d; F/R: e f g h;" is the
      response where a-d are the Start/Stop pins and e-h are the
      Forward/Reverse pins.
+   
+   Set Motor Control Pins:
+     "SetMotorControlPins: a b c d e f g h"
+   
+     Sets the pins used to control the motors. The Start/Stop pins
+     are set to a-d and the Forward/Reverse pins are set to e-h
+     in motor order. The pin numbers must be separated by single
+     spaces and there must be no trailing space. The new pin
+     assignments are discarded if they are invalid (pins not
+     available or there were duplicates in the given set). If
+     successfull, a response of "ACK" is sent. If the command is
+     invalid, a response of "Invalid" is sent.
      
    Get Number of Motors:
      "NumberMotors?"
@@ -134,6 +146,13 @@ const String freqdriveMotorControlVersion = "0.2";
 // Output pin for the Slave Select SPI line of the AD56X4.
 
 int AD56X4_SS_pin = 10;
+
+// Array of pins that could be used to control the drives. This
+// will be every digital pin other than the serial and SPI pins.
+// Hardcoded for the Uno.
+
+int numberAvailablePins = 9;
+int availablePins[] = {2, 3, 4, 5, 6, 7, 8, 9, 12};
 
 /* A string is needed to hold serial commands sent by the computer
    along with a flag to indicate whether the command is complete
@@ -254,7 +273,7 @@ void loop()
       
       commandFromComputerString = commandFromComputerString.substring(0,commandFromComputerString.indexOf('\n'));
       
-      // Check the command string for each of the nine commands in
+      // Check the command string for each of the ten commands in
       // turn, do the appropriate command, or respond with "Invalid"
       // if it was not a valid command.
       
@@ -392,6 +411,13 @@ void loop()
           else
             Serial.print("Invalid\n");
           
+        }
+      else if (commandFromComputerString.startsWith("SetMotorControlPins: "))
+        {
+          if (processSetMotorControlPinsCommand(commandFromComputerString))
+            Serial.print("ACK\n");
+          else
+            Serial.print("Invalid\n");
         }
       else // As it wasn't a recognized command, return "Invalid".
         Serial.print("Invalid\n");
@@ -580,6 +606,130 @@ void haltMotors()
   
 }
 
+/* Given the set motor control pins command string, the command is
+   validated and the new start/stop and forward/reverse set (old
+   values are kept if they are invalid). Returns whether the
+   command was valid (true) or not (false).
+   
+   A valid set pins command looks like
+   
+   "SetMotorControlPins: a b c d e f g h"
+   
+   It must start with "SetMotorControlPins: " followed by the
+   4 start/stop pin numbers and the 4 forward/reverse pin numbers
+   (letters a-h must be available pin numbers). The pin numbers
+   are separated by spaces with no trailing space. They must be
+   available and cannot be duplicated.
+ */
+boolean processSetMotorControlPinsCommand(String s)
+{
+  
+  // The command must start right.
+  
+  if (!s.startsWith("SetMotorControlPins: "))
+    return false;
+  
+  // Remove the leading part so we are just left with the pins.
+  
+  s = s.substring(21);
+  
+  // Need arrays to hold the new pins before checking them.
+          
+  int newStartStopPins[4];
+  int newForwardReversePins[4];
+  
+  // Read the Start/Stop pins one by one. They are space separated.
+  
+  for (int i = 0; i < 4; i++)
+    {
+      // Find the next space (return false if there isn't one),
+      // grab the pin stored by the text up to the next space,
+      // check to see if there is enough room left in s for another
+      // pin to plausibly be there, and then strip off the pin
+      // number just read.
+      int index = s.indexOf(' ');
+      if (index == -1)
+        return false;
+      newStartStopPins[i] = (int)s.substring(0,index).toInt();
+      if (s.length() < index + 2)
+          return false;
+      s = s.substring(index+1);
+    }
+  
+  // Read the Forward/Reverse pins. They are space separated.
+  
+  for (int i = 0; i < 4; i++)
+    {
+      // If we are on the last one, then we can just read to the
+      // end of the string. Otherwise, we need to read to the
+      // next space (invalid if one not found, and strip that pin
+      // number off the string.
+      if (i == 3)
+        newForwardReversePins[i] = (int)s.toInt();
+      else
+        {
+          int index = s.indexOf(' ');
+          if (index == -1)
+            return false;
+          newForwardReversePins[i] = (int)s.substring(0,index).toInt();
+          if (s.length() < index + 2)
+            return false;
+          s = s.substring(index+1);
+        }
+    }
+  
+  // Check to see if all the Start/Stop pins are in the set of
+  // available pins, are not duplicated, and aren't in the new
+  // Forward/Reverse pin set. If the pins are not available or
+  // there are duplicates, then they are invalid and we need to
+  // return false.
+  
+  for (int i = 0; i < 4; i++)
+    {
+      if (!itemInArray(newStartStopPins[i],availablePins,
+          numberAvailablePins))
+        return false;
+      if (itemInArray(newStartStopPins[i],&newStartStopPins[i+1],
+          3-i))
+        return false;
+      if (itemInArray(newStartStopPins[i],newForwardReversePins,4))
+        return false;
+    }
+  
+  // Check to see if the new Forward/Reverse pins are in the set of
+  // available pins and are not duplicated. If they aren't
+  // available or there are duplicates, they are invalid and we
+  // return false.
+  
+  for (int i = 0; i < 4; i++)
+    {
+      if (!itemInArray(newForwardReversePins[i],availablePins,
+          numberAvailablePins))
+        return false;
+      if (itemInArray(newForwardReversePins[i],
+          &newForwardReversePins[i+1],3-i))
+        return false;
+    }
+  
+  // The set of new pins is valid. So, we need to halt motors on
+  // the original pin set, copy over the new pins, and then halt
+  // the motors on the new pin set before returning true since
+  // the new pins were valid.
+  
+  haltMotors();
+  
+  for (int i = 0; i < 4; i++)
+    {
+      motorStartStopPins[i] = newStartStopPins[i];
+      motorForwardReversePins[i] = newForwardReversePins[i];
+    }
+  
+  haltMotors();
+  
+  return true;
+  
+}
+
 // Set the Start/Stop, Forward/Reverse, and frequency control set
 // voltage states of the motor drives correctly.
 void WriteMotorControlStates()
@@ -689,6 +839,18 @@ void serialEvent()
       
     }
   
+}
+
+// Checks to see if an item is contained in an array of the
+// specified length.
+boolean itemInArray(int item, int *arr, int length)
+{
+  for (int i = 0; i < length; i++)
+    {
+      if (item == arr[i])
+        return true;
+    }
+  return false;
 }
 
 
